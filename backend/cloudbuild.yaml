@@ -2,7 +2,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-# Build the image 
+# Build the image
 - name: 'gcr.io/cloud-builders/docker'
   dir: 'backend'
   args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/savrfoodfinder/nomnomssavr-repo/nomnomssavr-backend:$COMMIT_SHA', '.']
