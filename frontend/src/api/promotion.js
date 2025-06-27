@@ -2,9 +2,9 @@ import axios from "axios";
 import qs from 'qs';
 import { ACCESS_TOKEN } from "../constants";
 
-const fallbackApiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
+//const fallbackApiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
 
-const apiUrl = import.meta.env.VITE_API_URL || fallbackApiUrl;
+const apiUrl = import.meta.env.VITE_API_URL //|| fallbackApiUrl;
 
 const promotions = axios.create({
   baseURL: apiUrl,
