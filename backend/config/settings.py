@@ -15,20 +15,20 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+#load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR, '.env')) #this is only for local to get env from root, ignored on cloud run since .env is not there
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY") #os.getenv gets from googles secret manager when image is built
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "storages",
     "accounts",
     "social",
     "promotions",
@@ -100,17 +101,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'testingver13',
+        'NAME': 'nomnoms_db', #on deploy this is dependent on the DB name set in cloud (this isnt using local copy!!!)
         'USER': 'root',
-        'PASSWORD': 'wearenumberone',
-        'HOST': '127.0.0.1', 
-        'HOST': 'localhost', 
+        'PASSWORD': os.getenv('DB_PASSWORD'), #'pw', 
+        'HOST': os.getenv('DB_HOST'),
         'PORT': '3306',
         'OPTIONS' : {
             'charset' : 'utf8mb4', #emojis and special chars
         }
     }
 }
+
+DEFAULT_FILE_STORAGE = "storages.backend.gcloud.GoogleCloudStorage"
+GS_BUCKET_NAME = os.getenv('GS_BUCKET_NAME')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -153,8 +156,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = ['https://nomnomssavr.vercel.app'] #if using cookies add CRSF_TRUSTED_ORIGINS as well, can consider SESSION_COOKIE as well
+#CORS_ALLOW_ALL_ORIGINS = True
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+CORS_ALLOW_CREDENTIALS = True
+
+MEDIA_URL = f"https://storage.googleapi.com/{GS_BUCKET_NAME}" #temp placeholder, need to reconfig since bucket is private #'/media/' for local testing
+#MEDIA_ROOT = BASE_DIR / 'media' #local testing

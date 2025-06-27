@@ -1,0 +1,26 @@
+steps:
+# Build the image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/savrfoodfinder/nomnomssavr-repo/nomnomssavr-backend:$COMMIT_SHA', '.']
+# Push the image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'asia-southeast1-docker.pkg.dev/savrfoodfinder/nomnomssavr-repo/nomnomssavr-backend:$COMMIT_SHA']
+# Deploy image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: 
+    - 'run'
+    - 'deploy'
+    - 'nomnomssavr-backend'
+    - '--image'
+    - 'asia-southeast1-docker.pkg.dev/savrfoodfinder/nomnomssavr-repo/nomnomssavr-backend:$COMMIT_SHA'
+    - '--region'
+    - 'asia-southeast1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
+    - '--add-cloudsql-instances=savrfoodfinder:asia-southeast1:nnsavrsqlinstance'
+    - '--update-secrets'
+    - 'DB_PASSWORD=DB_PASSWORD:latest, DJANGO_SECRET_KEY=DJANGO_SECRET_KEY:latest, DB_HOST=DB_HOST:latest, GS_BUCKET_NAME=GS_BUCKET_NAME:latest, TELEGRAM_API_ID=TELEGRAM_API_ID:latest, TELEGRAM_API_HASH=TELEGRAM_API_HASH:latest'
+images:
+- 'asia-southeast1-docker.pkg.dev/savrfoodfinder/nomnomssavr-repo/nomnomssavr-backend:$COMMIT_SHA'
