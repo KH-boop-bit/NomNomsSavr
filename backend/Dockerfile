@@ -18,5 +18,5 @@ RUN apt-get update && apt-get install -y gcc default-libmysqlclient-dev pkg-conf
 # Copy over everything in directory (backend)
 COPY . /app
 
-# Run app (gunicorn uvicorn worker for asgi for prod server, and bind networks to port=8000)
-CMD ["gunicorn", "config.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"] 
+# Run app (gunicorn uvicorn worker for asgi for prod server, and bind networks to port=8080)
+CMD ["gunicorn", "config.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8080"] 
